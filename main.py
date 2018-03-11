@@ -1,18 +1,18 @@
 import getopt
 import hashlib
 import random
+import sys
 import time
 
-import pygame as pygame
 import requests
-import sys
+
+from WordManager import *
 
 s = requests.Session()
 m = hashlib.md5()
 appId = "4d38fd17135b64d0"
 secret = "CjeJMW4p2wPlqmuXMm19snjvPy9vd2XG"
-rs ={"mode":"1","level":"3"}
-
+rs = {"mode": "1", "level": "3"}
 
 
 class Dict:
@@ -62,52 +62,61 @@ if __name__ == '__main__':
                 rs["level"] = arg
 
 
-
     parseArgs(sys.argv)
     dic = Dict()
 
+    word = WordEntry(None, None, None)
     if rs["mode"] != "1":
 
         resp = dic.translate(rs["word"], fl="zh-CHS", to="EN")
+        word.zh = rs["word"]
+
+        word.en = resp["translation"][0]
     else:
         resp = dic.translate(rs["word"])
-
+        word.zh = resp["transltion"][0]
+        word.en = rs["word"]
     if resp["errorCode"] != "0":
         print("出错,错误码" + resp['errorCode'])
     else:
 
         s = print("翻译结果==========\n")
 
-        print(resp["translation"][0]+"\n")
-        for i in resp["basic"]["explains"]:
+        print(resp["translation"][0] + "\n")
+
+        detail = resp["basic"]["explains"]
+
+        word.detail = detail
+        for i in detail:
             print(i)
+        saveWord("data/level"+rs["level"]+".db",word)
 
 
-        # 使用get方法获得url的内容
-        # response = requests.get(resp["tSpeakUrl"])
-        # # 由于response的格式为requests.models.Response无法直接print，用text转成str格式
-        # # 若用于下载图片、视频、音频等多媒体格式,应用response.content转成二进制的bytes格式
-        # html = response.content
-        # # 打印网页
-        # print(html)
-        #
-        # import urllib.request
-        #
-        # res = urllib.request.urlopen(resp["speakUrl"])
-        #
-        # data = res.read()
-        # with open("1.mp3", "wb") as file:
-        #     file.write(data)
-        #
-        # # f = open("/Users/zhengzechao/Downloads/1.wav", "rb")
-        # # data = f.read()
-        # # html = response.read()
-        # # import pygame
-        # #
-        # pygame.init()
-        # pygame.mixer.init()
-        # #
-        # track = pygame.mixer.music.load("1.mp3")  # 载入音乐文件
-        # pygame.mixer.music.play(loops=5)  # 开始播放
-        #
-        # time.sleep(3)
+            # 使用get方法获得url的内容
+            # response = requests.get(resp["tSpeakUrl"])
+            # # 由于response的格式为requests.models.Response无法直接print，用text转成str格式
+            # # 若用于下载图片、视频、音频等多媒体格式,应用response.content转成二进制的bytes格式
+            # html = response.content
+            # # 打印网页
+            # print(html)
+            #
+            # import urllib.request
+            #
+            # res = urllib.request.urlopen(resp["speakUrl"])
+            #
+            # data = res.read()
+            # with open("1.mp3", "wb") as file:
+            #     file.write(data)
+            #
+            # # f = open("/Users/zhengzechao/Downloads/1.wav", "rb")
+            # # data = f.read()
+            # # html = response.read()
+            # # import pygame
+            # #
+            # pygame.init()
+            # pygame.mixer.init()
+            # #
+            # track = pygame.mixer.music.load("1.mp3")  # 载入音乐文件
+            # pygame.mixer.music.play(loops=5)  # 开始播放
+            #
+            # time.sleep(3)
